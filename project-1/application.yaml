@@ -5,17 +5,27 @@ metadata:
   namespace: argocd
 spec:
   project: default
-  source:
-    repoURL: 'https://github.com/abbos1117/helm-chart.git'
-    targetRevision: main
-    path: mychart
-    helm:
-      valueFiles:
-        - values.yaml
+  sources:
+    # 1-source: Chart
+    - repoURL: 'https://github.com/abbos1117/helm-chart.git'
+      targetRevision: main
+      path: mychart
+      helm:
+        valueFiles:
+          - $values/project-1/values.yaml   # 2-repodan keladigan values fayl
+
+    # 2-source: Values
+    - repoURL: 'https://github.com/abbos1117/argocd-apps.git'
+      targetRevision: main
+      ref: values
+
   destination:
     server: https://kubernetes.default.svc
     namespace: project-1
+
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
